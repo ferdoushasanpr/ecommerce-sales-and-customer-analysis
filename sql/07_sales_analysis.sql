@@ -26,4 +26,11 @@ GROUP BY [OrderStatus];
 SELECT COUNT([OrderID]) AS [TotalOrders]
       ,SUM([TotalAmount]) AS [Revenue]
       ,AVG([TotalAmount]) AS [AOV]
-  FROM [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered'
+  FROM [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered';
+
+----------------------------------------------------------------------------------------What are the first and last order date?
+
+SELECT
+    MIN([OrderDate]) AS [FirstOrderDate],
+    MAX([OrderDate]) AS [LastOrderDate]
+FROM dbo.Orders;
