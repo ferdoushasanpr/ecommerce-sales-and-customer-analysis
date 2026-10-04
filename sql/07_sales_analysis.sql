@@ -39,4 +39,11 @@ FROM dbo.Orders;
 
 SELECT [Category]
       ,COUNT([ProductID]) AS [TotalProduct]
-  FROM [EcommerceDB].[dbo].[Products] GROUP BY [Category]
+  FROM [EcommerceDB].[dbo].[Products] GROUP BY [Category];
+
+----------------------------------------------------------------------------------------What is the revenue by year?
+
+SELECT YEAR([OrderDate]) AS [Year]
+      ,COUNT([OrderID]) AS [TotalOrders]
+      ,SUM([TotalAmount]) AS [Revenue]
+  FROM [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered' GROUP BY YEAR([OrderDate])
