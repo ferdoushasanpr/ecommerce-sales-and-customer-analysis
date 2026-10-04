@@ -20,3 +20,10 @@ SELECT   [OrderStatus],
          AVG([TotalAmount]) AS [AverageOrderValue]
 FROM     [EcommerceDB].[dbo].[Orders]
 GROUP BY [OrderStatus];
+
+----------------------------------------------------------------------------------------What are the total revenue and average order value (AOV)?
+
+SELECT COUNT([OrderID]) AS [TotalOrders]
+      ,SUM([TotalAmount]) AS [Revenue]
+      ,AVG([TotalAmount]) AS [AOV]
+  FROM [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered'
