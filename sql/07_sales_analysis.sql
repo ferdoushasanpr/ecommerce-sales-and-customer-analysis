@@ -34,3 +34,9 @@ SELECT
     MIN([OrderDate]) AS [FirstOrderDate],
     MAX([OrderDate]) AS [LastOrderDate]
 FROM dbo.Orders;
+
+----------------------------------------------------------------------------------------How much products contains in each category?
+
+SELECT [Category]
+      ,COUNT([ProductID]) AS [TotalProduct]
+  FROM [EcommerceDB].[dbo].[Products] GROUP BY [Category]
