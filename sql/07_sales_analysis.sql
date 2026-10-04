@@ -57,3 +57,35 @@ SELECT   YEAR([OrderDate]) AS [Year],
 FROM     [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered'
 GROUP BY YEAR([OrderDate]), MONTH([OrderDate]), DATENAME(MONTH, [OrderDate])
 ORDER BY YEAR([OrderDate]), MONTH([OrderDate]);
+
+----------------------------------------------------------------------------------------What is the revenue change by month?
+
+WITH MonthlyRevenue AS
+(
+    SELECT
+        YEAR(OrderDate) AS [Year],
+        MONTH(OrderDate) AS [MonthNumber],
+        DATENAME(MONTH, OrderDate) AS [Month],
+        COUNT(OrderID) AS [TotalOrders],
+        SUM(TotalAmount) AS [Revenue]
+    FROM EcommerceDB.dbo.Orders
+    WHERE OrderStatus = 'Delivered'
+    GROUP BY
+        YEAR(OrderDate),
+        MONTH(OrderDate),
+        DATENAME(MONTH, OrderDate)
+)
+SELECT
+    [Year],
+    [Month],
+    [TotalOrders],
+    [Revenue],
+    LAG([Revenue]) OVER (
+        ORDER BY [Year], [MonthNumber]
+    ) AS [PreviousRevenue],
+    [Revenue] -
+        LAG([Revenue]) OVER (
+            ORDER BY [Year], [MonthNumber]
+        ) AS [RevenueChange]
+FROM MonthlyRevenue
+ORDER BY [Year], [MonthNumber];
