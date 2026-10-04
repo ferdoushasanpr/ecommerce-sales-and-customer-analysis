@@ -46,4 +46,14 @@ SELECT [Category]
 SELECT YEAR([OrderDate]) AS [Year]
       ,COUNT([OrderID]) AS [TotalOrders]
       ,SUM([TotalAmount]) AS [Revenue]
-  FROM [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered' GROUP BY YEAR([OrderDate])
+  FROM [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered' GROUP BY YEAR([OrderDate]);
+  
+----------------------------------------------------------------------------------------What is the revenue by month?
+
+SELECT   YEAR([OrderDate]) AS [Year],
+         DATENAME(MONTH, [OrderDate]) AS [Month],
+         COUNT([OrderID]) AS [TotalOrders],
+         SUM([TotalAmount]) AS [Revenue]
+FROM     [EcommerceDB].[dbo].[Orders] WHERE [OrderStatus] = 'Delivered'
+GROUP BY YEAR([OrderDate]), MONTH([OrderDate]), DATENAME(MONTH, [OrderDate])
+ORDER BY YEAR([OrderDate]), MONTH([OrderDate]);
