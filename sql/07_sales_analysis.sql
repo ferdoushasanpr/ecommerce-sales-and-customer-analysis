@@ -163,3 +163,17 @@ SELECT   [Year],
          AVG([Revenue]) OVER (ORDER BY [Year], [MonthNumber] ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS [3-Month Rolling Avg Revenue]
 FROM     RevenueWithPreviousMonth
 ORDER BY [Year], [MonthNumber];
+
+-----------------------------------------------------------------------------------------Which product categories generate the most revenue?
+
+SELECT   p.Category,
+         SUM(oi.Quantity) AS [TotalQty],
+         sum(oi.Quantity * oi.PricePerUnit) AS [Revenue]
+FROM     Orders AS o
+         INNER JOIN
+         Order_Items AS oi
+         ON o.OrderID = oi.OrderID
+         INNER JOIN
+         Products AS p
+         ON oi.ProductID = p.ProductID WHERE o.OrderStatus = 'Delivered'
+GROUP BY p.Category ORDER BY [Revenue] DESC;
