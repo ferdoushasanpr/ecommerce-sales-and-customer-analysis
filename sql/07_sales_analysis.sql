@@ -89,3 +89,45 @@ SELECT
         ) AS [RevenueChange]
 FROM MonthlyRevenue
 ORDER BY [Year], [MonthNumber];
+
+----------------------------------------------------------------------------------------What is the month-over-month revenue growth?
+
+WITH MonthlyRevenue AS
+(
+    SELECT
+        YEAR(OrderDate) AS [Year],
+        MONTH(OrderDate) AS [MonthNumber],
+        DATENAME(MONTH, OrderDate) AS [Month],
+        COUNT(OrderID) AS [Orders],
+        COUNT(DISTINCT CustomerID) AS [Customers],
+        SUM(TotalAmount) AS [Revenue],
+        AVG(TotalAmount) AS [AOV]
+    FROM EcommerceDB.dbo.Orders
+    WHERE OrderStatus = 'Delivered'
+    GROUP BY
+        YEAR(OrderDate),
+        MONTH(OrderDate),
+        DATENAME(MONTH, OrderDate)
+)
+SELECT
+    [Year],
+    [Month],
+    [Orders],
+    [Customers],
+    [Revenue],
+    [AOV],
+    (
+        [Revenue] -
+        LAG([Revenue]) OVER (
+            ORDER BY [Year], [MonthNumber]
+        )
+    )
+    /
+    NULLIF(
+        LAG([Revenue]) OVER (
+            ORDER BY [Year], [MonthNumber]
+        ),
+        0
+    ) * 100 AS [MoM Growth %]
+FROM MonthlyRevenue
+ORDER BY [Year], [MonthNumber];
