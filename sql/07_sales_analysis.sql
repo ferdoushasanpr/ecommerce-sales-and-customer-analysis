@@ -131,3 +131,35 @@ SELECT
     ) * 100 AS [MoM Growth %]
 FROM MonthlyRevenue
 ORDER BY [Year], [MonthNumber];
+
+----------------------------------------------------------------------------------------What is the 3-Month Rolling Avg Revenue?
+
+WITH     MonthlyRevenue
+AS       (SELECT   YEAR(OrderDate) AS [Year],
+                   MONTH(OrderDate) AS [MonthNumber],
+                   DATENAME(MONTH, OrderDate) AS [Month],
+                   COUNT(OrderID) AS [Orders],
+                   COUNT(DISTINCT CustomerID) AS [Customers],
+                   SUM(TotalAmount) AS [Revenue],
+                   AVG(TotalAmount) AS [AOV]
+          FROM     EcommerceDB.dbo.Orders
+          WHERE    OrderStatus = 'Delivered'
+          GROUP BY YEAR(OrderDate), MONTH(OrderDate), DATENAME(MONTH, OrderDate)),
+         RevenueWithPreviousMonth
+AS       (SELECT [Year],
+                 [MonthNumber],
+                 [Month],
+                 [Orders],
+                 [Customers],
+                 [Revenue],
+                 [AOV],
+                 LAG([Revenue]) OVER (ORDER BY [Year], [MonthNumber]) AS [PreviousMonthRevenue]
+          FROM   MonthlyRevenue)
+SELECT   [Year],
+         [Month],
+         [Revenue],
+         [PreviousMonthRevenue],
+         (([Revenue] - [PreviousMonthRevenue]) / NULLIF ([PreviousMonthRevenue], 0)) * 100 AS [MoM Growth %],
+         AVG([Revenue]) OVER (ORDER BY [Year], [MonthNumber] ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS [3-Month Rolling Avg Revenue]
+FROM     RevenueWithPreviousMonth
+ORDER BY [Year], [MonthNumber];
