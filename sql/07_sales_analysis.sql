@@ -191,3 +191,35 @@ FROM     Orders AS o
          Products AS p
          ON oi.ProductID = p.ProductID WHERE o.OrderStatus = 'Delivered'
 GROUP BY p.Brand ORDER BY [Revenue] DESC;
+
+------------------------------------------------------------------------------------------What is the sales velocity of each product?
+
+WITH ProductSales AS
+(
+    SELECT
+        oi.ProductID,
+        SUM(oi.Quantity) AS UnitsSold
+    FROM EcommerceDB.dbo.Order_Items AS oi
+    INNER JOIN EcommerceDB.dbo.Orders AS o
+        ON oi.OrderID = o.OrderID
+    WHERE o.OrderStatus = 'Delivered'
+    GROUP BY oi.ProductID
+),
+Inventory AS
+(
+    SELECT
+        ProductID,
+        SUM(StockQuantity) AS CurrentStock
+    FROM EcommerceDB.dbo.Inventory
+    GROUP BY ProductID
+)
+SELECT
+    p.ProductID,
+    p.ProductName,
+    COALESCE(ps.UnitsSold, 0) AS UnitsSold,
+    COALESCE(i.CurrentStock, 0) AS CurrentStock
+FROM EcommerceDB.dbo.Products AS p
+LEFT JOIN ProductSales AS ps
+    ON p.ProductID = ps.ProductID
+LEFT JOIN Inventory AS i
+    ON p.ProductID = i.ProductID;
