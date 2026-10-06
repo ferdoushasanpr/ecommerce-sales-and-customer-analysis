@@ -107,3 +107,47 @@ FROM   [EcommerceDB].[dbo].[Orders] AS o
        [EcommerceDB].[dbo].[Customers] AS c
        ON [o].[CustomerID] = [c].[CustomerID]
 WHERE  [OrderID] IS NULL;
+
+----------------------------------------------------------------------------------------How can customers be segmented based on spending?
+
+WITH CustomerRFM AS
+(
+    SELECT
+        c.CustomerID,
+        c.FullName,
+
+        DATEDIFF(
+            DAY,
+            MAX(o.OrderDate),
+            CAST(GETDATE() AS DATE)
+        ) AS Recency,
+
+        COUNT(DISTINCT o.OrderID) AS Frequency,
+
+        SUM(o.TotalAmount) AS Monetary
+
+    FROM EcommerceDB.dbo.Customers AS c
+    INNER JOIN EcommerceDB.dbo.Orders AS o
+        ON c.CustomerID = o.CustomerID
+
+    WHERE o.OrderStatus = 'Delivered'
+
+    GROUP BY
+        c.CustomerID,
+        c.FullName
+)
+SELECT
+    *,
+    NTILE(5) OVER (
+        ORDER BY Recency DESC
+    ) AS RecencyScore,
+
+    NTILE(5) OVER (
+        ORDER BY Frequency
+    ) AS FrequencyScore,
+
+    NTILE(5) OVER (
+        ORDER BY Monetary
+    ) AS MonetaryScore
+
+FROM CustomerRFM;
