@@ -75,3 +75,16 @@ GROUP BY
     c.City
 ORDER BY
     Revenue DESC;
+    
+----------------------------------------------------------------------------------------How many customers registered but have not ordered?
+
+SELECT
+    COUNT(DISTINCT CASE
+        WHEN [o].[OrderID] IS NOT NULL THEN [c].[CustomerID]
+    END) AS [Ordered],
+    COUNT(DISTINCT CASE
+        WHEN [o].[OrderID] IS NULL THEN [c].[CustomerID]
+    END) AS [NotOrderedYet]
+FROM [EcommerceDB].[dbo].[Customers] AS [c]
+LEFT JOIN [EcommerceDB].[dbo].[Orders] AS [o]
+    ON [c].[CustomerID] = [o].[CustomerID];
