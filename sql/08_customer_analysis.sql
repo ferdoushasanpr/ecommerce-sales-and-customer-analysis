@@ -88,3 +88,22 @@ SELECT
 FROM [EcommerceDB].[dbo].[Customers] AS [c]
 LEFT JOIN [EcommerceDB].[dbo].[Orders] AS [o]
     ON [c].[CustomerID] = [o].[CustomerID];
+    
+----------------------------------------------------------------------------------------Which customers registered but never placed an order?
+
+SELECT [c].[CustomerID],
+       [FullName],
+       [Email],
+       [SignUpDate],
+       [City],
+       [Country],
+       DATEDIFF(
+        DAY,
+        [c].[SignUpDate],
+        CAST(GETDATE() AS DATE)
+    ) AS [DaysSinceSignup]
+FROM   [EcommerceDB].[dbo].[Orders] AS o
+       RIGHT OUTER JOIN
+       [EcommerceDB].[dbo].[Customers] AS c
+       ON [o].[CustomerID] = [c].[CustomerID]
+WHERE  [OrderID] IS NULL;
