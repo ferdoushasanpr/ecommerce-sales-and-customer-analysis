@@ -58,3 +58,20 @@ SELECT
     ) * 100.0 / COUNT(*) AS RepeatCustomerPercentage
 
 FROM CustomerOrders;
+
+----------------------------------------------------------------------------------------Which countries/cities generate the most revenue?
+
+SELECT
+    c.Country,
+    c.City,
+    COUNT(DISTINCT o.OrderID) AS TotalOrders,
+    SUM(o.TotalAmount) AS Revenue
+FROM EcommerceDB.dbo.Orders AS o
+INNER JOIN EcommerceDB.dbo.Customers AS c
+    ON o.CustomerID = c.CustomerID
+WHERE o.OrderStatus = 'Delivered'
+GROUP BY
+    c.Country,
+    c.City
+ORDER BY
+    Revenue DESC;
