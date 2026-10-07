@@ -204,3 +204,84 @@ SELECT
         + MonetaryScore AS RFMScore
 FROM RFMScores
 ORDER BY RFMScore DESC;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+WITH CustomerRFM AS
+(
+    SELECT
+        c.CustomerID,
+        c.FullName,
+
+        DATEDIFF(
+            DAY,
+            MAX(o.OrderDate),
+            CAST(GETDATE() AS DATE)
+        ) AS Recency,
+
+        COUNT(DISTINCT o.OrderID) AS Frequency,
+
+        SUM(o.TotalAmount) AS Monetary
+
+    FROM EcommerceDB.dbo.Customers AS c
+    INNER JOIN EcommerceDB.dbo.Orders AS o
+        ON c.CustomerID = o.CustomerID
+
+    WHERE o.OrderStatus = 'Delivered'
+
+    GROUP BY
+        c.CustomerID,
+        c.FullName
+),
+RFMScores AS
+(
+    SELECT
+        *,
+        NTILE(5) OVER (ORDER BY Recency DESC) AS RecencyScore,
+        NTILE(5) OVER (ORDER BY Frequency) AS FrequencyScore,
+        NTILE(5) OVER (ORDER BY Monetary) AS MonetaryScore
+    FROM CustomerRFM
+),
+FinalRFM AS
+(
+    SELECT
+        *,
+        RecencyScore
+        + FrequencyScore
+        + MonetaryScore AS RFMScore
+    FROM RFMScores
+)
+SELECT
+    CustomerID,
+    FullName,
+    Recency,
+    Frequency,
+    Monetary,
+    RecencyScore,
+    FrequencyScore,
+    MonetaryScore,
+    RFMScore,
+
+    CASE
+    WHEN RecencyScore >= 4
+         AND FrequencyScore >= 4
+         AND MonetaryScore >= 4
+        THEN 'High Value'
+
+    WHEN RecencyScore >= 4
+         AND FrequencyScore >= 3
+        THEN 'Loyal Customers'
+
+    WHEN RecencyScore <= 2
+         AND FrequencyScore >= 3
+        THEN 'At Risk'
+
+    WHEN RecencyScore >= 4
+         AND FrequencyScore <= 2
+        THEN 'New / Promising'
+
+    ELSE 'Occasional Customers'
+END AS CustomerSegment
+
+FROM FinalRFM
+ORDER BY RFMScore DESC;
