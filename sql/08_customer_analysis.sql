@@ -326,3 +326,43 @@ GROUP BY
 ORDER BY
     [Year],
     MONTH(c.SignUpDate);
+    
+----------------------------------------------------------------------------------------How long does a customer not order since their most recent order?
+
+WITH CustomerMetrics AS
+(
+    SELECT
+        c.CustomerID,
+        c.FullName,
+        c.email,
+        c.City,
+        c.Country,
+        COUNT(o.OrderID) AS TotalOrders,
+        SUM(o.TotalAmount) AS TotalRevenue,
+        AVG(o.TotalAmount) AS AverageOrderValue,
+        c.SignUpDate,
+        MIN(o.OrderDate) AS FirstOrderDate,
+        MAX(o.OrderDate) AS LastOrderDate
+    FROM EcommerceDB.dbo.Customers AS c
+    INNER JOIN EcommerceDB.dbo.Orders AS o
+        ON c.CustomerID = o.CustomerID
+    WHERE o.OrderStatus = 'Delivered'
+    GROUP BY
+        c.CustomerID,
+        c.FullName,
+        c.email,
+        c.City,
+        c.Country,
+        c.SignUpDate
+)
+SELECT
+    *,
+    DATEDIFF(
+        DAY,
+        LastOrderDate,
+        CAST(GETDATE() AS DATE)
+    ) AS DaysSinceLastOrder
+FROM CustomerMetrics
+ORDER BY TotalRevenue DESC;
+
+
