@@ -303,3 +303,26 @@ FROM     [EcommerceDB].[dbo].[Customers] AS c
          [EcommerceDB].[dbo].[Orders] AS o
          ON [c].[CustomerID] = [o].[CustomerID]
 GROUP BY [c].[CustomerID], [FullName], [Email], [SignUpDate], [City];
+
+----------------------------------------------------------------------------------------How many of the customers placed an order during their signup month?
+
+
+SELECT
+    YEAR(c.SignUpDate) AS [Year],
+    DATENAME(MONTH, c.SignUpDate) AS [Month],
+    COUNT(DISTINCT c.CustomerID) AS [TotalCustomers],
+    COUNT(DISTINCT CASE
+        WHEN YEAR(c.SignUpDate) = YEAR(o.OrderDate)
+         AND MONTH(c.SignUpDate) = MONTH(o.OrderDate)
+        THEN c.CustomerID
+    END) AS [CustomersOrderedDuringSignupMonth]
+FROM EcommerceDB.dbo.Customers AS c
+LEFT JOIN EcommerceDB.dbo.Orders AS o
+    ON c.CustomerID = o.CustomerID
+GROUP BY
+    YEAR(c.SignUpDate),
+    MONTH(c.SignUpDate),
+    DATENAME(MONTH, c.SignUpDate)
+ORDER BY
+    [Year],
+    MONTH(c.SignUpDate);
