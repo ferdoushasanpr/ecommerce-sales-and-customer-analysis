@@ -285,3 +285,21 @@ END AS CustomerSegment
 
 FROM FinalRFM
 ORDER BY RFMScore DESC;
+
+----------------------------------------------------------------------------------------What are the customer details, first and last order dates, number of days since their last order, total number of orders, and total revenue generated?
+
+SELECT   [c].[CustomerID],
+         [FullName],
+         [Email],
+         [SignUpDate],
+         MIN([OrderDate]) AS [FirstOrderDate],
+         MAX([OrderDate]) AS [LastOrderDate],
+         DATEDIFF(DAY, MAX([OrderDate]), CAST (GETDATE() AS DATE)) AS [DaysSinceLastOrder],
+         [City],
+         COUNT([OrderID]) AS [TotalOrders],
+         SUM([TotalAmount]) AS [TotalRevenue]
+FROM     [EcommerceDB].[dbo].[Customers] AS c
+         INNER JOIN
+         [EcommerceDB].[dbo].[Orders] AS o
+         ON [c].[CustomerID] = [o].[CustomerID]
+GROUP BY [c].[CustomerID], [FullName], [Email], [SignUpDate], [City];
