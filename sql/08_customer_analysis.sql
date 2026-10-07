@@ -151,3 +151,56 @@ SELECT
     ) AS MonetaryScore
 
 FROM CustomerRFM;
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+WITH CustomerRFM AS
+(
+    SELECT
+        c.CustomerID,
+        c.FullName,
+
+        DATEDIFF(
+            DAY,
+            MAX(o.OrderDate),
+            CAST(GETDATE() AS DATE)
+        ) AS Recency,
+
+        COUNT(DISTINCT o.OrderID) AS Frequency,
+
+        SUM(o.TotalAmount) AS Monetary
+
+    FROM EcommerceDB.dbo.Customers AS c
+    INNER JOIN EcommerceDB.dbo.Orders AS o
+        ON c.CustomerID = o.CustomerID
+
+    WHERE o.OrderStatus = 'Delivered'
+
+    GROUP BY
+        c.CustomerID,
+        c.FullName
+),
+RFMScores AS
+(
+    SELECT
+        *,
+        NTILE(5) OVER (
+            ORDER BY Recency DESC
+        ) AS RecencyScore,
+
+        NTILE(5) OVER (
+            ORDER BY Frequency
+        ) AS FrequencyScore,
+
+        NTILE(5) OVER (
+            ORDER BY Monetary
+        ) AS MonetaryScore
+    FROM CustomerRFM
+)
+SELECT
+    *,
+    RecencyScore
+        + FrequencyScore
+        + MonetaryScore AS RFMScore
+FROM RFMScores
+ORDER BY RFMScore DESC;
