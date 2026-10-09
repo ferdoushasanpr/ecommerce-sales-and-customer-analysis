@@ -46,3 +46,26 @@ SELECT
 
 FROM ProductRevenue
 ORDER BY Revenue DESC;
+
+----------------------------------------------------------------------------------------What percentage of total revenue comes from each category?
+
+SELECT
+    p.Category,
+    SUM(oi.Quantity * oi.PricePerUnit) AS Revenue,
+    SUM(oi.Quantity * oi.PricePerUnit) * 100.0 /
+        (
+            SELECT SUM(oi2.Quantity * oi2.PricePerUnit)
+            FROM EcommerceDB.dbo.Order_Items AS oi2
+            INNER JOIN EcommerceDB.dbo.Orders AS o2
+                ON oi2.OrderID = o2.OrderID
+            WHERE o2.OrderStatus = 'Delivered'
+        ) AS RevenuePercentage
+FROM EcommerceDB.dbo.Order_Items AS oi
+INNER JOIN EcommerceDB.dbo.Products AS p
+    ON oi.ProductID = p.ProductID
+INNER JOIN EcommerceDB.dbo.Orders AS o
+    ON oi.OrderID = o.OrderID
+WHERE o.OrderStatus = 'Delivered'
+GROUP BY p.Category
+ORDER BY Revenue DESC;
+
