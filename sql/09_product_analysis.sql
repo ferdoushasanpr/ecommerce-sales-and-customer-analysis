@@ -69,3 +69,20 @@ WHERE o.OrderStatus = 'Delivered'
 GROUP BY p.Category
 ORDER BY Revenue DESC;
 
+
+----------------------------------------------------------------------------------------How much units sold per product in the last 6 months?
+
+SELECT
+        oi.ProductID,
+        YEAR(o.OrderDate) AS SalesYear,
+        DATENAME(MONTH, o.OrderDate) AS SalesMonth,
+        SUM(oi.Quantity) AS MonthlyUnitsSold
+    FROM dbo.Orders AS o
+    INNER JOIN dbo.Order_Items AS oi
+        ON o.OrderID = oi.OrderID
+    WHERE o.OrderDate >= DATEADD(MONTH, -6, CAST(GETDATE() AS date))
+    GROUP BY
+        oi.ProductID,
+        YEAR(o.OrderDate),
+        MONTH(o.OrderDate),
+        DATENAME(MONTH, o.OrderDate)
