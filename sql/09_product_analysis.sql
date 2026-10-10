@@ -112,3 +112,23 @@ SELECT [ProductID],
        DENSE_RANK() OVER (PARTITION BY [Category] ORDER BY [TotalQty] DESC) AS [Rank],
        [Revenue]
 FROM   ProductCategoryQuantity;
+
+
+----------------------------------------------------------------------------------------Which product combinations are frequently purchased together?
+
+
+SELECT   [A].[ProductID] AS [Product1],
+[P1].[ProductName] AS [Product1],
+         [B].[ProductID] AS [Product2],
+         [P2].[ProductName] AS [Product2],
+         COUNT(DISTINCT [A].[OrderID]) AS [OrdersTogether]
+FROM     [dbo].[Order_Items] AS [A]
+         INNER JOIN
+         [dbo].[Order_Items] AS [B]
+         ON [A].[OrderID] = [B].[OrderID]
+            AND [A].[ProductID] < [B].[ProductID] INNER JOIN [EcommerceDB].[dbo].[Products] AS [P1]
+    ON [A].[ProductID] = [P1].[ProductID]
+INNER JOIN [EcommerceDB].[dbo].[Products] AS [P2]
+    ON [B].[ProductID] = [P2].[ProductID]
+GROUP BY [A].[ProductID], [P1].[ProductName], [B].[ProductID], [P2].[ProductName]
+ORDER BY [OrdersTogether] DESC;
