@@ -86,3 +86,29 @@ SELECT
         YEAR(o.OrderDate),
         MONTH(o.OrderDate),
         DATENAME(MONTH, o.OrderDate)
+        
+        
+----------------------------------------------------------------------------------------Which products rank highest within each category?
+
+WITH   ProductCategoryQuantity
+AS     (SELECT   [p].[ProductID],
+                 [p].[ProductName],
+                 [P].[Category],
+                 SUM(oi.Quantity) AS [TotalQty],
+                 SUM(oi.Quantity * oi.PricePerUnit) AS [Revenue]
+        FROM     Orders AS o
+                 INNER JOIN
+                 Order_Items AS oi
+                 ON o.OrderID = oi.OrderID
+                 INNER JOIN
+                 Products AS p
+                 ON oi.ProductID = p.ProductID
+        WHERE    o.OrderStatus = 'Delivered'
+        GROUP BY [p].[ProductID], [p].[ProductName], [P].[Category])
+SELECT [ProductID],
+       [ProductName],
+       [Category],
+       [TotalQty],
+       DENSE_RANK() OVER (PARTITION BY [Category] ORDER BY [TotalQty] DESC) AS [Rank],
+       [Revenue]
+FROM   ProductCategoryQuantity;
