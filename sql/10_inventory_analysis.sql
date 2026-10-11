@@ -17,3 +17,15 @@ SELECT   [Warehouse],
 FROM     [EcommerceDB].[dbo].[Inventory]
 GROUP BY [Warehouse]
 ORDER BY [TotalQty] DESC;
+
+
+----------------------------------------------------------------------------------------What is the monetary value of inventory?
+
+SELECT 'MonetaryValue' AS [Index],
+       SUM([UnitPrice] * [StockQuantity]) AS [Total]
+FROM   [EcommerceDB].[dbo].[Inventory] AS i
+       INNER JOIN
+       [EcommerceDB].[dbo].[Products] AS p
+       ON [i].[ProductID] = [p].[ProductID];
+
+
