@@ -1,4 +1,6 @@
-----------Customers — duplicate CustomerID
+/* ------------------------------------------------------------
+   1. Duplicate customer IDs
+   ------------------------------------------------------------ */
 
 SELECT 
     CustomerID,
@@ -8,7 +10,9 @@ GROUP BY CustomerID
 HAVING COUNT(*) > 1;
 
 
-----------Customers — duplicate email addresses
+/* ------------------------------------------------------------
+   2. Duplicate customer email addresses
+   ------------------------------------------------------------ */
 
 SELECT 
     Email,
@@ -18,7 +22,9 @@ GROUP BY Email
 HAVING COUNT(*) > 1;
 
 
-----------Products — duplicate ProductID
+/* ------------------------------------------------------------
+   3. Duplicate product IDs
+   ------------------------------------------------------------ */
 
 SELECT 
     ProductID,
@@ -28,7 +34,9 @@ GROUP BY ProductID
 HAVING COUNT(*) > 1;
 
 
-----------Orders — duplicate OrderID
+/* ------------------------------------------------------------
+   4. Duplicate order IDs
+   ------------------------------------------------------------ */
 
 SELECT 
     OrderID,
@@ -38,7 +46,9 @@ GROUP BY OrderID
 HAVING COUNT(*) > 1;
 
 
-----------Order_Items — duplicate OrderItemID
+/* ------------------------------------------------------------
+   5. Duplicate order-item IDs
+   ------------------------------------------------------------ */
 
 SELECT 
     OrderItemID,
@@ -48,7 +58,9 @@ GROUP BY OrderItemID
 HAVING COUNT(*) > 1;
 
 
-----------Inventory — duplicate InventoryID
+/* ------------------------------------------------------------
+   6. Duplicate Inventory IDs
+   ------------------------------------------------------------ */
 
 SELECT 
     InventoryID,
@@ -58,7 +70,9 @@ GROUP BY InventoryID
 HAVING COUNT(*) > 1;
 
 
-----------Inventory — duplicate Product/Warehouse combinations
+/* ------------------------------------------------------------
+   7. Duplicate Inventory Product/Warehouse combinations
+   ------------------------------------------------------------ */
 
 SELECT 
     ProductID,
@@ -71,7 +85,9 @@ GROUP BY
 HAVING COUNT(*) > 1;
 
 
-----------Duplicate OrderID + ProductID combinations
+/* ------------------------------------------------------------
+   8. Duplicate OrderID + ProductID combinations
+   ------------------------------------------------------------ */
 
 SELECT
     OrderID,
