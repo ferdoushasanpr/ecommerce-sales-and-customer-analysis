@@ -1,3 +1,6 @@
+/* ------------------------------------------------------------
+   1. Check for invalid email address
+   ------------------------------------------------------------ */
 SELECT *
 FROM dbo.Customers
 WHERE Email LIKE '% %'
@@ -5,6 +8,10 @@ WHERE Email LIKE '% %'
    OR Email LIKE '@%'
    OR Email LIKE '%@%@%';
 
+
+/* ------------------------------------------------------------
+   2. Check for invalid product prices
+   ------------------------------------------------------------ */
 SELECT *
 FROM dbo.Products
 WHERE UnitPrice < 0;
@@ -20,6 +27,9 @@ FROM dbo.Products
 WHERE UnitPrice > 100000;
 
 
+/* ------------------------------------------------------------
+   3. Check for invalid order-item quantities
+   ------------------------------------------------------------ */
 SELECT *
 FROM dbo.Order_Items
 WHERE Quantity <= 0;
@@ -34,21 +44,29 @@ FROM dbo.Order_Items
 WHERE PricePerUnit = 0;
 
 
+/* ------------------------------------------------------------
+   4. Check for invalid order amounts
+   ------------------------------------------------------------ */
 SELECT *
 FROM dbo.Orders
 WHERE TotalAmount < 0;
-
 
 SELECT *
 FROM dbo.Orders
 WHERE TotalAmount = 0;
 
 
+/* ------------------------------------------------------------
+   5. Check for invalid stock quantity
+   ------------------------------------------------------------ */
 SELECT *
 FROM dbo.Inventory
 WHERE StockQuantity < 0;
 
 
+/* ------------------------------------------------------------
+   6. Check for invalid order and signup dates
+   ------------------------------------------------------------ */
 SELECT 
     o.OrderID,
     o.CustomerID,
@@ -59,6 +77,11 @@ JOIN dbo.Customers c
     ON o.CustomerID = c.CustomerID
 WHERE o.OrderDate < c.SignUpDate;
 
+
+/* ------------------------------------------------------------
+   7. Check for inconsistent product prices across order items
+   Compare historical order-item prices for each product.
+   ------------------------------------------------------------ */
 SELECT 
     oi.ProductID,
     p.ProductName,
@@ -75,24 +98,39 @@ GROUP BY
 HAVING MIN(oi.PricePerUnit) <> MAX(oi.PricePerUnit);
 
 
+/* ------------------------------------------------------------
+   8. Check for orders without order items
+   ------------------------------------------------------------ */
 SELECT o.*
 FROM dbo.Orders o
 LEFT JOIN dbo.Order_Items oi
     ON o.OrderID = oi.OrderID
 WHERE oi.OrderID IS NULL;
 
+
+/* ------------------------------------------------------------
+   9. Check for order items without matching orders
+   ------------------------------------------------------------ */
 SELECT oi.*
 FROM dbo.Order_Items oi
 LEFT JOIN dbo.Orders o
     ON oi.OrderID = o.OrderID
 WHERE o.OrderID IS NULL;
 
+
+/* ------------------------------------------------------------
+   10. Check for products without inventory records
+   ------------------------------------------------------------ */
 SELECT p.*
 FROM dbo.Products p
 LEFT JOIN dbo.Inventory i
     ON p.ProductID = i.ProductID
 WHERE i.ProductID IS NULL;
 
+
+/* ------------------------------------------------------------
+   11. Count orphan records across related tables
+   ------------------------------------------------------------ */
 SELECT 'Orders without Customers' AS CheckName,
        COUNT(*) AS ErrorCount
 FROM dbo.Orders o
@@ -128,20 +166,29 @@ LEFT JOIN dbo.Products p
 WHERE p.ProductID IS NULL;
 
 
+/* ------------------------------------------------------------
+   12. Revenue reconciliation
+   Compare order-level amount with calculated line-item amount.
+   ------------------------------------------------------------ */
 SELECT
     o.OrderID,
     o.TotalAmount AS OrderTotal,
     SUM(oi.Quantity * oi.PricePerUnit) AS CalculatedTotal,
-    o.TotalAmount - SUM(oi.Quantity * oi.PricePerUnit) AS Difference
-FROM EcommerceDB.dbo.Orders AS o
-INNER JOIN EcommerceDB.dbo.Order_Items AS oi
+    o.TotalAmount
+        - SUM(oi.Quantity * oi.PricePerUnit) AS Difference
+FROM dbo.Orders AS o
+INNER JOIN dbo.Order_Items AS oi
     ON o.OrderID = oi.OrderID
 GROUP BY
     o.OrderID,
     o.TotalAmount
 HAVING
     ABS(
-        o.TotalAmount - SUM(oi.Quantity * oi.PricePerUnit)
+        o.TotalAmount
+        - SUM(oi.Quantity * oi.PricePerUnit)
     ) > 0.01
 ORDER BY
-    ABS(o.TotalAmount - SUM(oi.Quantity * oi.PricePerUnit)) DESC;
+    ABS(
+        o.TotalAmount
+        - SUM(oi.Quantity * oi.PricePerUnit)
+    ) DESC;
