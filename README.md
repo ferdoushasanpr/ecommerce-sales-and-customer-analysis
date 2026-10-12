@@ -81,3 +81,76 @@ Products
 ```
 
 ---
+
+# 📊 Tables
+
+## 1. Customers
+
+Stores customer information.
+| Column | Data Type | Description |
+| --- | --- | --- |
+| CustomerID | NVARCHAR(50) | Unique customer identifier |
+| FullName | NVARCHAR(50) | Customer name |
+| Email | NVARCHAR(50) | Customer email |
+| SignUpDate | DATE | Customer registration date |
+| City | NVARCHAR(50) | Customer city |
+| Country | NVARCHAR(50) | Customer country |
+
+---
+
+## 2. Products
+
+Contains information about products sold by the e-commerce business.
+
+| Column | Data Type | Description |
+| --- | --- | --- |
+| ProductID | NVARCHAR(50) | Unique product identifier |
+| ProductName | NVARCHAR(50) | Product name |
+| Category | NVARCHAR(50) | Product category |
+| Brand | NVARCHAR(50) | Product brand |
+| UnitPrice | FLOAT | Product unit price |
+
+---
+
+
+
+## 3. Orders
+
+Stores customer order information.
+
+| Column | Data Type | Description |
+| --- | --- | --- |
+| OrderID | NVARCHAR(50) | Unique order identifier |
+| CustomerID | NVARCHAR(50) | Customer who placed the order |
+| OrderDate | DATE | Date of the order |
+| OrderStatus | NVARCHAR(50) | Current order status |
+| TotalAmount | FLOAT | Total order amount |
+
+---
+
+## 4. Order_Items
+
+Contains individual products included in each order.
+
+| Column | Data Type | Description |
+| --- | --- | --- |
+| OrderItemID | NVARCHAR(50) | Unique order-item identifier |
+| OrderID | NVARCHAR(50) | Related order |
+| ProductID | NVARCHAR(50) | Related product |
+| Quantity | TINYINT | Quantity purchased |
+| PricePerUnit | FLOAT | Price per unit at the time of purchase |
+
+---
+
+## 5. Inventory
+
+Stores product stock information across warehouses.
+
+| Column | Data Type | Description |
+| --- | --- | --- |
+| InventoryID | NVARCHAR(50) | Unique inventory record |
+| ProductID | NVARCHAR(50) | Related product |
+| Warehouse | NVARCHAR(50) | Warehouse location |
+| StockQuantity | SMALLINT | Available stock |
+
+---
