@@ -34,3 +34,50 @@ The main objectives of this project are to:
 11. Create reusable SQL objects such as a **View** and **Stored Procedure**.
 
 ---
+
+# 🗂️ Database Schema
+
+The database is named:
+
+```
+EcommerceDB
+```
+
+It contains five main tables:
+
+```
+EcommerceDB
+├── Customers
+├── Products
+├── Orders
+├── Order_Items
+└── Inventory
+
+```
+
+### Entity Relationship Overview
+
+```
+Customers
+│
+│ CustomerID
+▼
+Orders
+│
+│ OrderID
+▼
+Order_Items
+│
+│ ProductID
+▼
+Products
+
+
+Products
+│
+│ ProductID
+▼
+
+```
+
+---
