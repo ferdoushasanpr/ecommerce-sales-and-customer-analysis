@@ -154,3 +154,46 @@ Stores product stock information across warehouses.
 | StockQuantity | SMALLINT | Available stock |
 
 ---
+
+# 🔍 Data Quality Checks
+
+Before performing the analysis, some SQL queries are used to examine the database and check the completeness of the imported data.
+
+Examples include:
+
+- Counting unique customers
+- Counting unique products
+- Counting unique orders
+- Counting unique order items
+- Counting unique inventory records
+- Checking non-NULL values across columns
+
+
+Example:
+
+```
+
+SELECT COUNT(DISTINCT CustomerID) AS TotalCustomers
+
+FROM EcommerceDB.dbo.Customers;
+
+```
+
+Column completeness was also checked using `COUNT()`:
+
+```
+
+SELECT
+
+  COUNT(CustomerID) AS TotalCustomerID,
+  COUNT(FullName) AS TotalFullName,
+  COUNT(Email) AS TotalEmail,
+  COUNT(SignUpDate) AS TotalSignUpDate,
+  COUNT(City) AS TotalCity,
+  COUNT(Country) AS TotalCountry
+
+FROM EcommerceDB.dbo.Customers;
+
+```
+
+---
