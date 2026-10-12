@@ -227,3 +227,53 @@ GROUP BY OrderStatus;
 ```
 
 ---
+
+# 💰 Sales \& Revenue Analysis
+
+## 2. Total Revenue
+
+Revenue is analyzed by order status to understand the contribution of different order states.
+
+
+```
+SELECT
+
+  OrderStatus,
+  COUNT(OrderID) AS CountOrders,
+  SUM(TotalAmount) AS Revenue
+
+FROM EcommerceDB.dbo.Orders
+GROUP BY OrderStatus;
+
+```
+
+For sales-performance analysis, delivered orders are primarily used.
+
+---
+
+## 3. Average Order Value
+
+Average Order Value (AOV) is calculated for delivered orders.
+
+```
+SELECT
+
+  COUNT(OrderID) AS TotalOrders,
+  SUM(TotalAmount) AS Revenue,
+  AVG(TotalAmount) AS AOV
+
+FROM EcommerceDB.dbo.Orders
+WHERE OrderStatus = 'Delivered';
+
+```
+
+### Formula
+
+```
+AOV = Total Revenue / Total Orders
+
+```
+
+This metric helps understand the average value of a completed order.
+
+---
