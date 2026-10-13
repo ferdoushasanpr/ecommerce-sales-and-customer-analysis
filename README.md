@@ -277,3 +277,78 @@ AOV = Total Revenue / Total Orders
 This metric helps understand the average value of a completed order.
 
 ---
+
+# 📅 Time-Based Analysis
+
+
+## 4. First and Last Order Dates
+
+The project identifies the overall order date range.
+
+
+```
+
+SELECT
+
+  MIN(OrderDate) AS FirstOrderDate,
+  MAX(OrderDate) AS LastOrderDate
+
+FROM EcommerceDB.dbo.Orders;
+
+```
+
+---
+
+
+## 5. Revenue by Year
+
+Annual revenue and order volume are calculated using `YEAR()`.
+
+```
+
+SELECT
+
+  YEAR(OrderDate) AS Year,
+  COUNT(OrderID) AS TotalOrders,
+  SUM(TotalAmount) AS Revenue
+
+FROM EcommerceDB.dbo.Orders
+WHERE OrderStatus = 'Delivered'
+GROUP BY YEAR(OrderDate);
+
+```
+
+---
+
+
+## 6. Revenue by Month
+
+Monthly revenue, orders, and AOV are analyzed using SQL date functions.
+
+```
+
+SELECT
+
+  YEAR(OrderDate) AS Year,
+  MONTH(OrderDate) AS MonthNumber,
+  DATENAME(MONTH, OrderDate) AS Month,
+  COUNT(OrderID) AS TotalOrders,
+  SUM(TotalAmount) AS Revenue
+
+FROM EcommerceDB.dbo.Orders
+WHERE OrderStatus = 'Delivered'
+GROUP BY
+  YEAR(OrderDate),
+  MONTH(OrderDate),
+  DATENAME(MONTH, OrderDate)
+
+ORDER BY
+  Year,
+  MonthNumber;
+
+```
+
+
+Using `MONTH()` in addition to `DATENAME()` ensures that months are sorted chronologically rather than alphabetically.
+
+---
