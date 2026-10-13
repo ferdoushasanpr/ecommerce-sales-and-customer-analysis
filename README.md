@@ -352,3 +352,46 @@ ORDER BY
 Using `MONTH()` in addition to `DATENAME()` ensures that months are sorted chronologically rather than alphabetically.
 
 ---
+
+# 📊 Month-over-Month Revenue Growth
+
+The project uses the `LAG()` window function to compare each month's revenue with the previous month.
+
+```
+
+LAG(Revenue) OVER (
+  ORDER BY Year, MonthNumber
+)
+
+```
+
+The growth calculation is:
+
+```
+
+MoM Growth % = (Current Month Revenue - Previous Month Revenue) / Previous Month Revenue × 100
+
+```
+
+The analysis also includes a **3-month rolling average revenue**.
+
+
+```
+
+AVG(Revenue) OVER (
+  ORDER BY Year, MonthNumber
+  ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+)
+
+```
+
+This demonstrates the use of:
+
+- CTEs
+- Window functions
+- `LAG()`
+- Rolling averages
+- Percentage calculations
+- Date functions
+
+---
