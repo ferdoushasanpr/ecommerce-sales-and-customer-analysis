@@ -395,3 +395,52 @@ This demonstrates the use of:
 - Date functions
 
 ---
+
+# 🛍️ Product & Category Analysis
+
+## 7. Products by Category
+
+The project identifies the number of products in each category.
+
+
+```
+
+SELECT
+
+  Category,
+  COUNT(ProductID) AS TotalProduct
+
+FROM EcommerceDB.dbo.Products
+GROUP BY Category;
+
+```
+
+---
+
+## 8. Revenue by Product Category
+
+Category-level revenue is calculated from order-item data.
+
+```
+
+SELECT
+
+  p.Category,
+  SUM(oi.Quantity) AS TotalQty,
+  SUM(oi.Quantity \* oi.PricePerUnit) AS Revenue
+
+FROM EcommerceDB.dbo.Orders AS o
+INNER JOIN EcommerceDB.dbo.Order_Items AS oi
+  ON o.OrderID = oi.OrderID
+INNER JOIN EcommerceDB.dbo.Products AS p
+  ON oi.ProductID = p.ProductID
+WHERE o.OrderStatus = 'Delivered'
+GROUP BY p.Category
+ORDER BY Revenue DESC;
+
+```
+This allows categories to be compared based on:
+- Quantity sold
+- Revenue generated
+
+---
